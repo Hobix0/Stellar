@@ -1,0 +1,40 @@
+manifestVersion: 1
+id: hobix-stellar
+category: files
+name: Stellar
+version: "0.1.0"
+tagline: Dein selbst gehostetes Second Brain – Wiki, Tagesnotizen, Inbox, Projekte
+icon: https://raw.githubusercontent.com/Hobix0/Stellar/main/hobix-stellar/icon.svg
+description: >-
+  Stellar ist ein persönliches Second Brain im Notion-Stil.
+
+
+  Wiki: verschachtelte Seiten mit Block-Editor (Slash-Menü, Markdown-Kürzel,
+  Aufgaben, Hinweise, Code), Verlinkungen zwischen Seiten mit [[…]],
+  Rückverweise, Favoriten, Volltextsuche und Papierkorb.
+
+
+  Tagesnotizen mit Kalender und Inbox zum schnellen Festhalten (Alt + N),
+  einsortierbar in die Tagesnotiz, auf eine Seite oder als Aufgabe.
+
+
+  Projekte: Board und Liste, Aufgaben mit Status, Priorität, Fälligkeit,
+  Labels, Checklisten und Verknüpfung zu Wiki-Seiten.
+
+
+  Die Daten liegen in einer eigenen PostgreSQL-Datenbank auf deinem Umbrel.
+  Der Zugang ist über die Umbrel-Anmeldung geschützt.
+developer: Luca
+website: https://github.com/Hobix0/Stellar
+repo: https://github.com/Hobix0/Stellar
+support: https://github.com/Hobix0/Stellar/issues
+port: 3742
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+releaseNotes: >-
+  Erste Version: Wiki, Tagesnotizen, Inbox und Projekte.
+dependencies: []
+submitter: Luca
+submission: https://github.com/Hobix0/Stellar

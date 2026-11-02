@@ -1,0 +1,30 @@
+# Stellar ohne Umbrel (z. B. auf einem eigenen Server oder NAS)
+# Start:  docker compose up -d     → http://<server>:3000
+# Achtung: Stellar hat keine eigene Anmeldung. Nur im Heimnetz oder hinter
+# einem Proxy mit Anmeldung (z. B. Umbrel, Authelia, Cloudflare Access) betreiben.
+
+services:
+  web:
+    image: ghcr.io/hobix0/stellar:${STELLAR_VERSION:-latest}
+    # Alternative ohne fertiges Image: hier selbst bauen
+    # build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://stellar:${POSTGRES_PASSWORD:-stellar}@db:5432/stellar
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stellar
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-stellar}
+      POSTGRES_DB: stellar
+    volumes:
+      - stellar-db:/var/lib/postgresql/data
+
+volumes:
+  stellar-db:

@@ -1,0 +1,135 @@
+/* ==================================================================
+   Stellar · Grundlagen: Reset, Schrift, Formularelemente, Knöpfe
+   ================================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.55;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+kbd {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+}
+
+mark {
+    background: var(--accent-soft);
+    color: inherit;
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.muted {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* ---------------- Knöpfe ---------------- */
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--r-sm);
+    font-weight: 500;
+    font-size: 14px;
+    box-shadow: var(--raise-sm);
+    transition: background 0.1s;
+}
+.button:hover { background: var(--hover); }
+.button:disabled { opacity: 0.6; cursor: default; }
+.button-primary { background: var(--accent); color: #fff; box-shadow: none; }
+.button-primary:hover { color: #fff; background: var(--accent-strong); }
+.button-ghost { box-shadow: none; color: var(--text-soft); }
+.button-ghost:hover { background: var(--hover); }
+.button-danger { color: var(--danger); }
+.button-danger:hover { color: var(--danger); }
+.button-small { padding: 5px 11px; font-size: 13px; }
+
+.icon-button {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-sm);
+    color: var(--text-soft);
+    flex-shrink: 0;
+}
+.icon-button:hover { background: var(--hover); color: var(--text); }
+.icon-button.is-active { color: var(--warning); }
+.icon-button-small { width: 24px; height: 24px; border-radius: 7px; }
+.icon-button-danger:hover { color: var(--danger); }
+
+/* ---------------- Eingabefelder ---------------- */
+
+.input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    background: var(--field);
+    outline: none;
+}
+.input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.input-small { padding: 6px 10px; font-size: 13px; }
+.input-large { font-size: 18px; font-weight: 600; }
+textarea.input { resize: vertical; line-height: 1.5; }
+select.input { cursor: pointer; }
+
+.checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-soft);
+    white-space: nowrap;
+}
+
+input[type='checkbox'] {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}

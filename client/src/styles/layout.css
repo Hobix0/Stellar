@@ -1,0 +1,213 @@
+/* ==================================================================
+   Stellar · Seitenaufbau: Seitenleiste + Inhaltsbereich
+   ================================================================== */
+
+.app {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ---------------- Seitenleiste ---------------- */
+
+.sidebar {
+    width: 268px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 8px;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 8px 8px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.sidebar-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: var(--r-sm);
+    color: var(--text-soft);
+    font-size: 14px;
+    text-align: left;
+}
+.sidebar-search:hover { background: var(--hover); }
+.sidebar-search span { flex: 1; }
+
+.sidebar-nav { display: flex; flex-direction: column; gap: 2px; }
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    border-radius: var(--r-sm);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-soft);
+}
+.sidebar-link:hover { background: var(--hover); color: var(--text); }
+.sidebar-link.active { color: var(--text); background: var(--hover); font-weight: 600; }
+
+.sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    margin: 0 -6px;
+    padding: 0 6px;
+}
+
+.sidebar-section { margin-bottom: 10px; }
+
+.sidebar-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 8px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-radius: 8px;
+}
+.sidebar-section-title.is-drop-target { background: var(--accent-soft); }
+
+.sidebar-empty { padding: 4px 10px; font-size: 13px; color: var(--text-muted); }
+
+.sidebar-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+
+/* ---------------- Seitenbaum ---------------- */
+
+.page-tree-item {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    border-radius: 8px;
+    padding-right: 4px;
+}
+.page-tree-item:hover { background: var(--hover); }
+.page-tree-item.is-drop-target { background: var(--accent-soft); outline: 1px dashed var(--accent); }
+
+.page-tree-toggle {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+.page-tree-toggle:hover { background: var(--hover); }
+.page-tree-toggle.is-leaf { opacity: 0.35; }
+
+.page-tree-link {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 4px;
+    font-size: 14px;
+    color: var(--text-soft);
+    border-radius: 8px;
+}
+.page-tree-link.active { color: var(--text); font-weight: 600; }
+.page-tree-item:has(.page-tree-link.active) { background: var(--hover); }
+.page-tree-icon { flex-shrink: 0; width: 18px; text-align: center; }
+.page-tree-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.page-tree-add { opacity: 0; }
+.page-tree-item:hover .page-tree-add { opacity: 1; }
+
+.sidebar-favorite { padding-left: 10px; }
+.sidebar-favorite:hover { background: var(--hover); }
+
+/* ---------------- Inhalt ---------------- */
+
+.main {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    background: var(--surface);
+    padding: 40px 72px 80px;
+    position: relative;
+}
+
+.content-narrow { max-width: 760px; margin: 0 auto; }
+.content-wide { max-width: 1240px; margin: 0 auto; }
+
+.view-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+.view-title { font-size: 32px; font-weight: 700; line-height: 1.2; }
+.view-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 4px; }
+
+.empty-state { color: var(--text-muted); padding: 28px 0; text-align: center; }
+
+.mobile-menu-button { display: none; }
+.sidebar-backdrop { display: none; }
+
+/* ---------------- Handy / schmale Fenster ---------------- */
+
+@media (max-width: 860px) {
+    .main { padding: 58px 16px 60px; }
+    .mobile-menu-button { display: grid; position: absolute; top: 12px; left: 12px; }
+    .sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 50;
+        width: min(300px, 86vw);
+        transform: translateX(-105%);
+        transition: transform 0.2s ease;
+    }
+    .sidebar.is-open { transform: none; }
+    .sidebar-backdrop { display: block; position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, 0.3); }
+    .view-title { font-size: 24px; }
+}
+
+/* ---------------- Inbox-Zähler & Schnell-Notiz in der Seitenleiste ---------------- */
+
+.sidebar-badge {
+    margin-left: auto;
+    min-width: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 18px;
+    text-align: center;
+}
+
+.sidebar-capture {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: var(--r-sm);
+    color: var(--text-soft);
+    font-size: 14px;
+    text-align: left;
+}
+.sidebar-capture:hover { background: var(--hover); color: var(--text); }
+.sidebar-capture span { flex: 1; }

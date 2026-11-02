@@ -1,0 +1,16 @@
+# Nur für die lokale Entwicklung: startet PostgreSQL auf localhost:5432
+# Start: npm run db:up   – danach: npm run dev
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: stellar
+      POSTGRES_PASSWORD: stellar
+      POSTGRES_DB: stellar
+    ports:
+      - "5432:5432"
+    volumes:
+      - stellar-dev-db:/var/lib/postgresql/data
+
+volumes:
+  stellar-dev-db:

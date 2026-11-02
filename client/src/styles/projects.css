@@ -1,0 +1,205 @@
+/* ==================================================================
+   Stellar · Projekte: Übersicht, Kopf, Board, Liste, Aufgaben-Dialog
+   ================================================================== */
+
+/* ---------------- Übersicht ---------------- */
+
+.project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 20px; }
+
+.project-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+    border-radius: var(--r-lg);
+    box-shadow: var(--card-shadow);
+    border-top: 3px solid var(--tone);
+    transition: background 0.1s;
+}
+.project-card:hover { background: var(--hover); }
+.project-card-head { display: flex; align-items: center; justify-content: space-between; }
+.project-card-icon { font-size: 28px; }
+.project-card-name { font-size: 16px; font-weight: 600; }
+.project-card-description {
+    font-size: 13px;
+    color: var(--text-soft);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.project-card-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.is-overdue { color: var(--danger) !important; font-weight: 600; }
+
+.status-pill {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 1px 8px;
+    border-radius: 4px;
+    background: var(--hover);
+    color: var(--text-soft);
+}
+.status-active { color: var(--success); }
+.status-paused { color: var(--warning); }
+.status-done { color: var(--accent); }
+
+/* ---------------- Projektkopf ---------------- */
+
+.project-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 4px 0 18px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+}
+.project-header-icon { font-size: 40px; line-height: 1; }
+.project-header-main { flex: 1; min-width: 0; }
+.project-header-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 6px; font-size: 13px; color: var(--text-muted); font-weight: 600; }
+.project-header-meta svg { vertical-align: -2px; }
+.project-header-description { margin-top: 10px; color: var(--text-soft); white-space: pre-wrap; }
+.project-header-actions { display: flex; gap: 2px; }
+
+.project-wiki-link { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+
+.project-toolbar { display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.filter-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1; }
+.filter-bar .input { width: auto; min-width: 140px; }
+
+/* ---------------- Board ---------------- */
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(240px, 1fr));
+    gap: 16px;
+    overflow-x: auto;
+    padding: 4px 4px 12px;
+}
+.board-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 8px;
+    border-radius: var(--r-lg);
+    background: color-mix(in srgb, var(--text-muted) 7%, transparent);
+    min-height: 220px;
+}
+.board-column.is-drop-target { background: var(--accent-soft); }
+.board-column-header { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 14px; padding: 2px 4px; }
+.board-column-count { margin-left: auto; font-size: 12px; color: var(--text-muted); font-weight: 700; }
+.board-column-cards { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+.status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.status-dot-todo { background: var(--text-muted); }
+.status-dot-doing { background: #4f8ef7; }
+.status-dot-review { background: var(--warning); }
+.status-dot-done { background: var(--success); }
+
+.task-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 11px 13px;
+    border-radius: var(--r-md);
+    background: var(--surface);
+    box-shadow: var(--card-shadow);
+    cursor: grab;
+}
+.task-card:hover { background: color-mix(in srgb, var(--surface) 94%, var(--text)); }
+.task-card.is-dragging { opacity: 0.4; }
+.task-card.is-done .task-card-title { text-decoration: line-through; color: var(--text-muted); }
+.task-card-title { font-weight: 500; font-size: 14px; line-height: 1.35; }
+.task-card-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); }
+.task-card-meta:empty { display: none; }
+
+.drop-placeholder { height: 44px; border-radius: var(--r-md); border: 2px dashed var(--accent); opacity: 0.6; margin-bottom: 10px; }
+
+.quick-add-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 8px;
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+.quick-add-button:hover { background: var(--hover); color: var(--text); }
+.quick-add { margin-bottom: 14px; }
+
+/* ---------------- Kennzeichen ---------------- */
+
+.priority-badge { color: var(--danger); font-weight: 700; margin-right: 5px; letter-spacing: -1px; }
+.priority-1 { color: var(--text-muted); }
+.priority-2 { color: var(--warning); }
+.due-badge { white-space: nowrap; font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.due-badge.is-today { color: var(--warning); font-weight: 600; }
+.due-badge.is-overdue { color: var(--danger); font-weight: 600; }
+.checklist-progress { font-size: 12px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+.checklist-progress.is-complete { color: var(--success); }
+
+.label-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.label-chip {
+    display: inline-block;
+    padding: 1px 9px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--tone);
+    background: color-mix(in srgb, var(--tone) 15%, transparent);
+    white-space: nowrap;
+}
+.label-chip.is-unselected { opacity: 0.45; }
+.label-chip.is-selected { outline: 2px solid color-mix(in srgb, var(--tone) 50%, transparent); }
+
+/* ---------------- Liste ---------------- */
+
+.task-list { display: flex; flex-direction: column; gap: 22px; }
+.task-list-group-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.task-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: var(--r-sm);
+}
+.task-row:hover { background: var(--hover); }
+.task-row-title { flex: 1; min-width: 0; text-align: left; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.task-row.is-done .task-row-title { text-decoration: line-through; color: var(--text-muted); }
+
+/* ---------------- Aufgaben-Dialog ---------------- */
+
+.task-dialog { display: flex; flex-direction: column; gap: 18px; }
+.task-dialog-title {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 26px;
+    font-weight: 700;
+    padding-right: 30px;
+}
+.task-dialog-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.task-dialog-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
+
+.label-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.label-picker .label-chip { font-size: 12px; padding: 3px 11px; }
+.label-picker-input { width: 130px; }
+
+.checklist { display: flex; flex-direction: column; gap: 4px; }
+.checklist-item { display: flex; align-items: center; gap: 8px; padding: 2px 4px; border-radius: 8px; }
+.checklist-item:hover { background: var(--hover); }
+.checklist-item-text { flex: 1; border: none; background: transparent; outline: none; padding: 4px 0; }
+.checklist-item.is-done .checklist-item-text { text-decoration: line-through; color: var(--text-muted); }
+
+.linked-page { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.linked-page .input { width: auto; max-width: 280px; }
+.linked-page-link { font-weight: 500; padding: 4px 8px; border-radius: var(--r-sm); border: 1px solid var(--border); }
+.linked-page-link:hover { background: var(--hover); }
+
+@media (max-width: 860px) {
+    .board { grid-template-columns: repeat(4, 82vw); scroll-snap-type: x mandatory; }
+    .board-column { scroll-snap-align: start; }
+    .project-header { flex-wrap: wrap; }
+}

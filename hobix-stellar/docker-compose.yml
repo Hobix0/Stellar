@@ -1,0 +1,34 @@
+# Stellar auf umbrelOS
+# - app_proxy: Umbrels Proxy, schützt die App mit der Umbrel-Anmeldung
+# - web:       Stellar (Frontend + API)
+# - db:        PostgreSQL; Daten liegen unter ${APP_DATA_DIR}/data/db
+# APP_PASSWORD wird von umbrelOS je App fest erzeugt und dient als Datenbank-Passwort.
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: hobix-stellar_web_1
+      APP_PORT: 3000
+
+  web:
+    image: ghcr.io/hobix0/stellar:0.1.0
+    restart: on-failure
+    stop_grace_period: 20s
+    environment:
+      DATABASE_URL: postgres://stellar:${APP_PASSWORD}@hobix-stellar_db_1:5432/stellar
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      POSTGRES_USER: stellar
+      POSTGRES_PASSWORD: ${APP_PASSWORD}
+      POSTGRES_DB: stellar
+      # Unterordner, damit initdb einen leeren Ordner vorfindet
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ${APP_DATA_DIR}/data/db:/var/lib/postgresql/data
