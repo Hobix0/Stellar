@@ -49,6 +49,9 @@ export function Sidebar({ isOpen, theme, onToggleTheme, onOpenSearch, onNavigate
                     <Icon name="inbox" /> Inbox
                     {inboxItems.length > 0 && <span className="sidebar-badge">{inboxItems.length}</span>}
                 </NavLink>
+                <NavLink to="/reminders" className="sidebar-link" onClick={onNavigate}>
+                    <Icon name="bell" /> Erinnerungen
+                </NavLink>
                 <NavLink to="/projects" className="sidebar-link" onClick={onNavigate}>
                     <Icon name="projects" /> Projekte
                 </NavLink>
@@ -86,6 +89,9 @@ export function Sidebar({ isOpen, theme, onToggleTheme, onOpenSearch, onNavigate
             <div className="sidebar-footer">
                 <NavLink to="/trash" className="sidebar-link" onClick={onNavigate}>
                     <Icon name="trash" /> Papierkorb
+                </NavLink>
+                <NavLink to="/settings" className="icon-button" title="Einstellungen" onClick={onNavigate}>
+                    <Icon name="settings" />
                 </NavLink>
                 <button className="icon-button" title={theme === 'dark' ? 'Helles Design' : 'Dunkles Design'} onClick={onToggleTheme}>
                     <Icon name={theme === 'dark' ? 'sun' : 'moon'} />

@@ -2,7 +2,7 @@ manifestVersion: 1
 id: hobix-stellar
 category: files
 name: Stellar
-version: "0.1.0"
+version: "0.2.0"
 tagline: Dein selbst gehostetes Second Brain – Wiki, Tagesnotizen, Inbox, Projekte
 icon: https://raw.githubusercontent.com/Hobix0/Stellar/main/hobix-stellar/icon.svg
 description: >-
@@ -22,6 +22,11 @@ description: >-
   Labels, Checklisten und Verknüpfung zu Wiki-Seiten.
 
 
+  Erinnerungen mit Wiederholung und Push aufs Handy über Home Assistant,
+  Morgen-Briefing und ein MCP-Server, über den Sprachassistenten und
+  Claude dein Second Brain lesen und beschreiben können.
+
+
   Die Daten liegen in einer eigenen PostgreSQL-Datenbank auf deinem Umbrel.
   Der Zugang ist über die Umbrel-Anmeldung geschützt.
 developer: Luca
@@ -34,7 +39,10 @@ path: ""
 defaultUsername: ""
 defaultPassword: ""
 releaseNotes: >-
-  Erste Version: Wiki, Tagesnotizen, Inbox und Projekte.
+  Neu in 0.2.0: Erinnerungen (einmalig, täglich, werktags, wöchentlich,
+  monatlich) mit Push über Home Assistant, Morgen-Briefing, Einstellungen,
+  Connect-API (/connect) mit Token und MCP-Server für Home Assistant Assist
+  und Claude.
 dependencies: []
 submitter: Luca
 submission: https://github.com/Hobix0/Stellar

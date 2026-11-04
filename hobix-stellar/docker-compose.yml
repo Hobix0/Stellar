@@ -1,5 +1,6 @@
 # Stellar auf umbrelOS
-# - app_proxy: Umbrels Proxy, schützt die App mit der Umbrel-Anmeldung
+# - app_proxy: Umbrels Proxy, schützt die App mit der Umbrel-Anmeldung.
+#              Ausnahme: /connect/* (Home Assistant, Node-RED, Claude) – dort prüft Stellar selbst das API-Token.
 # - web:       Stellar (Frontend + API)
 # - db:        PostgreSQL; Daten liegen unter ${APP_DATA_DIR}/data/db
 # APP_PASSWORD wird von umbrelOS je App fest erzeugt und dient als Datenbank-Passwort.
@@ -10,9 +11,10 @@ services:
     environment:
       APP_HOST: hobix-stellar_web_1
       APP_PORT: 3000
+      PROXY_AUTH_WHITELIST: "/connect/*"
 
   web:
-    image: ghcr.io/hobix0/stellar:0.1.0
+    image: ghcr.io/hobix0/stellar:0.2.0
     restart: on-failure
     stop_grace_period: 20s
     environment:
