@@ -1,7 +1,8 @@
 /* ==================================================================
    Stellar · Express-App zusammensetzen
-   /api/*   → JSON-Schnittstelle (Wiki, Projekte, Tagesnotizen, Inbox)
-   /healthz → Lebenszeichen für Docker/Umbrel
+   /api/*     → JSON-Schnittstelle für die Oberfläche (hinter der Umbrel-Anmeldung)
+   /connect/* → Schnittstelle für Home Assistant, Node-RED und KI (MCP), mit API-Token
+   /healthz   → Lebenszeichen für Docker/Umbrel
    alles andere → gebautes React-Frontend (Single-Page-App)
    ================================================================== */
 
@@ -11,9 +12,14 @@ import express, { type Express } from 'express';
 import { config } from './config';
 import { createDailyRouter } from './daily/daily.routes';
 import { pool } from './db/pool';
+import { capturePathToken } from './connect/auth';
+import { createConnectRouter } from './connect/connect.routes';
 import { asyncHandler, errorMiddleware, HttpError } from './http/errors';
 import { createInboxRouter } from './inbox/inbox.routes';
+import { createIntegrationsRouter } from './integrations/integrations.routes';
 import { createProjectsRouter } from './projects/projects.routes';
+import { createRemindersRouter } from './reminders/reminders.routes';
+import { createSettingsRouter } from './settings/settings.routes';
 import { createWikiRouter } from './wiki/pages.routes';
 
 export function createApp(): Express {
@@ -31,9 +37,18 @@ export function createApp(): Express {
     api.use(createProjectsRouter());
     api.use(createDailyRouter());
     api.use(createInboxRouter());
+    api.use(createRemindersRouter());
+    api.use(createIntegrationsRouter());
+    api.use(createSettingsRouter());
     // Unbekannte API-Pfade nicht ans Frontend durchreichen, sondern sauber mit 404 beantworten
     api.use((_req, _res, next) => next(new HttpError(404, 'Unbekannter API-Pfad')));
     app.use('/api', api);
+
+    // Connect-API: Token im Header (/connect/…) oder im Pfad (/connect/t/<token>/…)
+    const connect = createConnectRouter();
+    app.use('/connect/t/:token', capturePathToken, connect);
+    app.use('/connect', connect);
+    app.use('/connect', (_req, _res, next) => next(new HttpError(404, 'Unbekannter Connect-Pfad')));
 
     serveClient(app);
     app.use(errorMiddleware);

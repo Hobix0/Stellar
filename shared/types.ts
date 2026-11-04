@@ -209,3 +209,100 @@ export interface TaskReorderInput {
     status: TaskStatus;
     taskIds: number[];
 }
+
+/* ------------------------------------------------------------------ */
+/*  Erinnerungen                                                      */
+/* ------------------------------------------------------------------ */
+
+export const RECURRENCES = ['none', 'daily', 'weekdays', 'weekly', 'monthly'] as const;
+export type Recurrence = (typeof RECURRENCES)[number];
+
+export const RECURRENCE_LABELS: Record<Recurrence, string> = {
+    none: 'Einmalig',
+    daily: 'Täglich',
+    weekdays: 'Werktags',
+    weekly: 'Wöchentlich',
+    monthly: 'Monatlich',
+};
+
+export interface Reminder {
+    id: number;
+    text: string;
+    /** Nächster Zeitpunkt (ISO mit Zeitzone) */
+    dueAt: string;
+    recurrence: Recurrence;
+    /** Optional verknüpfte Aufgabe */
+    taskId: number | null;
+    /** Wann zuletzt benachrichtigt wurde (nur einmalige Erinnerungen behalten den Wert) */
+    notifiedAt: string | null;
+    /** Gesetzt = erledigt */
+    doneAt: string | null;
+    createdAt: string;
+}
+
+export type ReminderInput = Partial<Pick<Reminder, 'text' | 'dueAt' | 'recurrence' | 'taskId'>>;
+
+/* ------------------------------------------------------------------ */
+/*  Briefing und Anbindungen                                          */
+/* ------------------------------------------------------------------ */
+
+export interface BriefingTask {
+    id: number;
+    title: string;
+    projectId: number;
+    projectName: string;
+    dueDate: string | null;
+    priority: TaskPriority;
+}
+
+export interface BriefingHomeValue {
+    entityId: string;
+    name: string;
+    /** Bereits lesbar aufbereitet, z. B. „klare Nacht“ oder „68 %“ */
+    value: string;
+}
+
+/** Tagesübersicht für Startseite, Morgen-Push und Jarvis */
+export interface Briefing {
+    date: string;
+    /** z. B. „Mittwoch, 4. November“ */
+    dateLabel: string;
+    overdueTasks: BriefingTask[];
+    dueTodayTasks: BriefingTask[];
+    reminders: Reminder[];
+    inboxCount: number;
+    home: BriefingHomeValue[];
+    /** Fertiger Text für Push-Nachricht oder Sprachausgabe */
+    text: string;
+}
+
+/** Was in der Oberfläche über die Anbindungen angezeigt wird (keine Geheimnisse) */
+export interface IntegrationStatus {
+    pushConfigured: boolean;
+    connectApiEnabled: boolean;
+    briefingTimes: { weekday: string | null; weekend: string | null };
+    timeZone: string;
+}
+
+/** Einstellungen der Anbindungen, wie die Oberfläche sie sieht (HA-Token nur als „gesetzt“) */
+export interface SettingsView {
+    apiToken: string;
+    timeZone: string;
+    publicUrl: string;
+    haUrl: string;
+    haTokenSet: boolean;
+    haNotifyService: string;
+    /** Kommagetrennt */
+    haBriefingEntities: string;
+    briefingWeekday: string | null;
+    briefingWeekend: string | null;
+    /** Per Umgebungsvariable festgelegte Felder – in der Oberfläche nicht änderbar */
+    locked: string[];
+}
+
+export type SettingsInput = Partial<
+    Omit<SettingsView, 'apiToken' | 'haTokenSet' | 'locked'> & {
+        /** Neues Home-Assistant-Token; '-' löscht es */
+        haToken: string;
+    }
+>;

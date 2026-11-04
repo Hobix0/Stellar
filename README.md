@@ -1,7 +1,7 @@
 # Stellar
 
-**Selbst gehostetes Second Brain im Notion-Stil** – Wiki, Tagesnotizen, Inbox und Projekte auf dem eigenen Server
-(z. B. umbrelOS). Basiert auf [Orbit](https://github.com/Hobix0/Orbit), neu aufgebaut in
+**Selbst gehostetes Second Brain im Notion-Stil** – Wiki, Tagesnotizen, Inbox, Projekte und Erinnerungen auf dem
+eigenen Server (z. B. umbrelOS), mit Push über Home Assistant und einem MCP-Server für Sprachassistenten und Claude. Basiert auf [Orbit](https://github.com/Hobix0/Orbit), neu aufgebaut in
 TypeScript mit PostgreSQL.
 
 ---
@@ -32,6 +32,21 @@ TypeScript mit PostgreSQL.
 - Aufgaben mit Status, Priorität, Start/Fälligkeit, Labels, Checkliste, Beschreibung, Wiki-Seite
 - Startseite mit fälligen Aufgaben der nächsten 7 Tage
 
+**Erinnerungen**
+- Einmalig, täglich, werktags, wöchentlich oder monatlich; Zeitumstellung und Monatsende werden richtig behandelt
+- Zum Zeitpunkt als Push aufs Handy (über Home Assistant), Ansicht „Erinnerungen“ und Block auf der Startseite
+- Abhaken: einmalige sind erledigt, wiederkehrende springen auf den nächsten Termin
+
+**Morgen-Briefing**
+- Werktags und am Wochenende zu einstellbarer Uhrzeit als Push: fällige und überfällige Aufgaben, Erinnerungen
+  des Tages, Inbox-Stand und frei wählbare Werte aus Home Assistant (Wetter, Auto-Akku …)
+
+**Jarvis-Anbindung**
+- Connect-API unter `/connect/*` mit API-Token – für Home Assistant, Node-RED, Skripte
+- MCP-Server mit 14 Werkzeugen (notieren, suchen, Seiten lesen, Aufgaben und Erinnerungen anlegen, Briefing …)
+  für Home Assistants Sprachassistenten und Claude; Transporte Streamable HTTP und SSE
+- Einstellungen (Zahnrad unten in der Seitenleiste): Token, fertige Adressen zum Kopieren, Home Assistant, Briefing
+
 **Bewusst weggelassen (gegenüber Orbit):** Anmeldung/Benutzer, Räume, Chat, Mail, Kalender,
 Anrufe, die gesamte EightBit-Umgebung. Auf Umbrel schützt die Umbrel-Anmeldung den Zugang.
 
@@ -56,6 +71,56 @@ Die Daten liegen in PostgreSQL unter `${APP_DATA_DIR}/data/db` und werden von Um
 
 **Update:** Version in `umbrel-app.yml` und im Image-Tag der Umbrel-`docker-compose.yml` erhöhen,
 committen, neuen Git-Tag pushen. Umbrel zeigt das Update dann im App Store an.
+
+## Jarvis: Home Assistant & Claude anbinden
+
+Alles Nötige steht in Stellar unter **Einstellungen** (Zahnrad unten links). Beim ersten Start erzeugt Stellar ein
+API-Token; die Adressen dort sind fertig zum Kopieren.
+
+**Push aufs Handy (Erinnerungen, Briefing)**
+1. In Home Assistant: Profil → Sicherheit → *Langlebiges Zugriffstoken* erstellen.
+2. In Stellar eintragen: Adresse von Home Assistant im Heimnetz (z. B. `http://10.100.8.2:8123`), das Token und den
+   notify-Dienst des Handys (Entwicklerwerkzeuge → Aktionen → `notify.mobile_app_…`, ohne `notify.`).
+3. *Test-Push* drücken.
+
+**Sprachassistent (Home Assistant Assist)**
+1. Integration *Model Context Protocol* hinzufügen, als SSE-Adresse die Zeile „Home Assistant · MCP-Server“ aus den
+   Einstellungen verwenden (`http://umbrel.local:3742/connect/t/<token>/mcp/sse`).
+2. Einen Gesprächsagenten mit LLM (z. B. Anthropic) einrichten und dort die Stellar-Werkzeuge zusätzlich zu „Assist“
+   freigeben.
+
+**Claude Desktop** (`claude_desktop_config.json`, Rechner im Heimnetz):
+```json
+{
+  "mcpServers": {
+    "stellar": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://umbrel.local:3742/connect/t/<token>/mcp", "--allow-http"]
+    }
+  }
+}
+```
+
+**Connect-API** (Token als `Authorization: Bearer <token>`, `X-Stellar-Token` oder im Pfad `/connect/t/<token>/…`):
+
+| Methode | Pfad | Zweck |
+|---|---|---|
+| GET | `/connect/briefing?date=` | Tagesübersicht als JSON inkl. fertigem Text |
+| POST | `/connect/inbox` `{text}` | In die Inbox notieren |
+| POST | `/connect/daily` `{text, date?}` | An die Tagesnotiz anhängen |
+| GET | `/connect/projects` | Aktive Projekte |
+| GET | `/connect/tasks?scope=today\|upcoming\|project&project=` | Offene Aufgaben |
+| POST | `/connect/tasks` `{project, title, dueDate?, priority?}` | Aufgabe anlegen (Projekt per Name oder ID) |
+| POST | `/connect/tasks/:id/done` | Aufgabe erledigen |
+| GET/POST | `/connect/reminders` `{text, dueAt, recurrence?}` | Erinnerungen lesen/anlegen (`dueAt` Ortszeit `JJJJ-MM-TTTHH:MM`) |
+| POST/DELETE | `/connect/reminders/:id[/done]` | Abhaken / löschen |
+| GET | `/connect/search?q=`, `/connect/pages/:id` | Suchen, Seite als Text |
+| POST | `/connect/mcp` · GET `/connect/mcp/sse` | MCP (Streamable HTTP · SSE) |
+
+Auf Umbrel ist nur `/connect/*` an der Umbrel-Anmeldung vorbei freigegeben (`PROXY_AUTH_WHITELIST`); dort prüft
+Stellar selbst das Token. Ohne Umbrel lassen sich alle Einstellungen auch per Umgebungsvariable festlegen
+(`STELLAR_API_TOKEN`, `STELLAR_TIMEZONE`, `STELLAR_PUBLIC_URL`, `HA_URL`, `HA_TOKEN`, `HA_NOTIFY_SERVICE`,
+`HA_BRIEFING_ENTITIES`, `BRIEFING_TIME_WEEKDAY`, `BRIEFING_TIME_WEEKEND`) – sie haben dann Vorrang.
 
 ## Ohne Umbrel (Docker)
 
@@ -102,6 +167,10 @@ server/src/
   daily/                   Tagesnotizen (Seite je Datum, Kalender, Aufräumen)
   inbox/                   Inbox: Einträge und Einsortieren (Tagesnotiz, Seite, Aufgabe)
   projects/                Projekte, Aufgaben, Checklisten, Labels
+  reminders/               Erinnerungen und Wiederholungen
+  integrations/            Home Assistant (Push, Zustände), Briefing, Planer
+  settings/                Einstellungen der Anbindungen (Datenbank, Umgebungsvariablen haben Vorrang)
+  connect/                 Connect-API mit Token und MCP-Server (gemeinsame Aktionen in operations.ts)
 
 client/src/
   App.tsx, main.tsx        Routen und Einstieg
@@ -114,6 +183,8 @@ client/src/
   features/wiki/           Seitenansicht, Seitenbaum, Suche, Papierkorb, Rückverweise
   features/wiki/editor/    Block-Editor (Blöcke, Tastatur, Menüs, Schreibmarke)
   features/projects/       Übersicht, Board, Liste, Aufgaben-Dialog
+  features/reminders/      Erinnerungen
+  features/settings/       Einstellungen (Jarvis, Home Assistant, Briefing)
   hooks/, lib/             Verzögertes Speichern, Datum, HTML, Theme
   styles/                  Notion-Stil, hell/dunkel (Variablen in tokens.css)
 

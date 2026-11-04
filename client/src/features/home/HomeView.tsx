@@ -1,17 +1,20 @@
 /* ==================================================================
    Stellar · Startseite
-   Fällige Aufgaben, zuletzt besuchte Seiten, Favoriten und Schnellaktionen.
+   Fällige Aufgaben, nächste Erinnerungen, zuletzt besuchte Seiten,
+   Favoriten und Schnellaktionen.
    ================================================================== */
 
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import type { PageSummary, Project, Task } from '../../../../shared/types';
+import { RECURRENCE_LABELS, type PageSummary, type Project, type Reminder, type Task } from '../../../../shared/types';
 import { projectsApi } from '../../api/projectsApi';
+import { remindersApi } from '../../api/remindersApi';
 import { wikiApi } from '../../api/wikiApi';
 import { Icon } from '../../components/ui/Icon';
 import { CaptureForm } from '../inbox/CaptureForm';
 import { useInbox } from '../inbox/InboxContext';
 import { DueBadge, PriorityBadge } from '../projects/TaskMeta';
+import { formatReminderTime } from '../reminders/reminderFormat';
 import { pageDisplayTitle, usePages } from '../wiki/PagesContext';
 
 function greetingForNow(): string {
@@ -28,11 +31,13 @@ export function HomeView() {
     const [recentPages, setRecentPages] = useState<PageSummary[]>([]);
     const [upcomingTasks, setUpcomingTasks] = useState<Task[]>([]);
     const [projectsById, setProjectsById] = useState<Map<number, Project>>(new Map());
+    const [reminders, setReminders] = useState<Reminder[]>([]);
 
     useEffect(() => {
         document.title = 'Stellar';
         wikiApi.listRecentPages().then(setRecentPages).catch(console.error);
         projectsApi.listUpcomingTasks().then(setUpcomingTasks).catch(console.error);
+        remindersApi.list().then(setReminders).catch(console.error);
         projectsApi
             .listProjects()
             .then(projects => setProjectsById(new Map(projects.map(project => [project.id, project]))))
@@ -87,6 +92,26 @@ export function HomeView() {
                             </Link>
                         );
                     })}
+                </article>
+
+                <article className="card">
+                    <div className="home-capture-header">
+                        <h2 className="card-title">Erinnerungen</h2>
+                        <Link to="/reminders" className="muted">
+                            Alle →
+                        </Link>
+                    </div>
+                    {reminders.length === 0 && <p className="muted">Keine offenen Erinnerungen.</p>}
+                    {reminders.slice(0, 5).map(reminder => (
+                        <Link key={reminder.id} to="/reminders" className="list-row-main">
+                            <Icon name="bell" size={16} />
+                            <span className="list-row-title">{reminder.text}</span>
+                            <span className="list-row-meta">
+                                {formatReminderTime(reminder.dueAt)}
+                                {reminder.recurrence !== 'none' && ` · ${RECURRENCE_LABELS[reminder.recurrence]}`}
+                            </span>
+                        </Link>
+                    ))}
                 </article>
 
                 <article className="card">

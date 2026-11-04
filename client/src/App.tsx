@@ -3,6 +3,8 @@
    /                 Startseite
    /daily[/:date]    Tagesnotiz (heute bzw. Datum JJJJ-MM-TT)
    /inbox            Inbox
+   /reminders        Erinnerungen
+   /settings         Einstellungen (Jarvis, Home Assistant, Briefing)
    /wiki/:pageId     Wiki-Seite
    /trash            Papierkorb
    /projects         Projektübersicht
@@ -17,6 +19,8 @@ import { InboxProvider } from './features/inbox/InboxContext';
 import { InboxView } from './features/inbox/InboxView';
 import { ProjectsOverview } from './features/projects/ProjectsOverview';
 import { ProjectRoute } from './features/projects/ProjectView';
+import { RemindersView } from './features/reminders/RemindersView';
+import { SettingsView } from './features/settings/SettingsView';
 import { PageRoute } from './features/wiki/PageView';
 import { PagesProvider } from './features/wiki/PagesContext';
 import { TrashView } from './features/wiki/TrashView';
@@ -32,6 +36,8 @@ export function App() {
                             <Route path="daily" element={<DailyRoute />} />
                             <Route path="daily/:date" element={<DailyRoute />} />
                             <Route path="inbox" element={<InboxView />} />
+                            <Route path="reminders" element={<RemindersView />} />
+                            <Route path="settings" element={<SettingsView />} />
                             <Route path="wiki/:pageId" element={<PageRoute />} />
                             <Route path="trash" element={<TrashView />} />
                             <Route path="projects" element={<ProjectsOverview />} />
